@@ -13,6 +13,7 @@
 		182B874E1CBB6035003FE5AB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 182B874C1CBB6035003FE5AB /* Main.storyboard */; };
 		182B87501CBB6035003FE5AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 182B874F1CBB6035003FE5AB /* Assets.xcassets */; };
 		182B87531CBB6035003FE5AB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 182B87511CBB6035003FE5AB /* LaunchScreen.storyboard */; };
+		182B875D1CBB7A4C003FE5AB /* GooeySlideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 182B875C1CBB7A4C003FE5AB /* GooeySlideMenu.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		182B874F1CBB6035003FE5AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		182B87521CBB6035003FE5AB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		182B87541CBB6035003FE5AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		182B875B1CBB7A4C003FE5AB /* GooeySlideMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GooeySlideMenu.h; sourceTree = "<group>"; };
+		182B875C1CBB7A4C003FE5AB /* GooeySlideMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GooeySlideMenu.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 		182B87421CBB6035003FE5AB /* GooeySlideMenu */ = {
 			isa = PBXGroup;
 			children = (
+				182B875A1CBB7A29003FE5AB /* Class */,
 				182B87461CBB6035003FE5AB /* AppDelegate.h */,
 				182B87471CBB6035003FE5AB /* AppDelegate.m */,
 				182B87491CBB6035003FE5AB /* ViewController.h */,
@@ -77,6 +81,15 @@
 				182B87441CBB6035003FE5AB /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		182B875A1CBB7A29003FE5AB /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				182B875B1CBB7A4C003FE5AB /* GooeySlideMenu.h */,
+				182B875C1CBB7A4C003FE5AB /* GooeySlideMenu.m */,
+			);
+			path = Class;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,6 +163,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				182B875D1CBB7A4C003FE5AB /* GooeySlideMenu.m in Sources */,
 				182B874B1CBB6035003FE5AB /* ViewController.m in Sources */,
 				182B87481CBB6035003FE5AB /* AppDelegate.m in Sources */,
 				182B87451CBB6035003FE5AB /* main.m in Sources */,
