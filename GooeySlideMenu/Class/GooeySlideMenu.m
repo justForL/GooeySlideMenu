@@ -7,6 +7,7 @@
 //
 
 #import "GooeySlideMenu.h"
+#import "SlideButton.h"
 #define buttonSpace 30
 /**
  *  空出一段距离,不至于蓝色View铺满全屏,以至于看不到形变效果
@@ -53,14 +54,10 @@
     
     CADisplayLink        *_displayLink;
     /**
-     *  动画数量
+     *  动画数量,当数量归零时,用于移除动displink
      */
     NSInteger             _animationCount;
 }
-
-
-
-
 
 - (instancetype)initWithTitle:(NSArray *)titles {
     return [self initWithTitle:titles withButtonHeight:40.0f withMenuColor:[UIColor colorWithRed:0 green:0.722 blue:1 alpha:1] withBackBlurStyle:UIBlurEffectStyleDark];
@@ -102,11 +99,46 @@
         _menuColor = menuColor;
         _menuButtonHeight = buttonHeight;
         
+        [self addButtons:titles];
     }
     return self;
 }
 
 
+
+/**
+ *  添加button
+ *
+ *  @param titles 按钮标题
+ */
+- (void)addButtons:(NSArray *)titles {
+
+        NSInteger index_down = titles.count/2;
+        NSInteger index_up = -1;
+        for (NSInteger i = 0; i < titles.count; i++) {
+            NSString *title = titles[i];
+            SlideButton *home_button = [[SlideButton alloc]initWithTitle:title];
+            if (i >= titles.count / 2) {
+                index_up ++;
+                home_button.center = CGPointMake(_keyWindow.frame.size.width/4, _keyWindow.frame.size.height/2 + _menuButtonHeight*index_up + buttonSpace*index_up + buttonSpace/2 + _menuButtonHeight/2);
+            }else{
+                index_down --;
+                home_button.center = CGPointMake(_keyWindow.frame.size.width/4, _keyWindow.frame.size.height/2 - _menuButtonHeight*index_down - buttonSpace*index_down - buttonSpace/2 - _menuButtonHeight/2);
+            }
+            
+            home_button.bounds = CGRectMake(0, 0, _keyWindow.frame.size.width/2 - 20*2, _menuButtonHeight);
+            home_button.buttonColor = _menuColor;
+            [self addSubview:home_button];
+            
+            __weak typeof(self) WeakSelf = self;
+            home_button.clickBlock = ^(){
+                [WeakSelf tapToUnTrigger];
+//                WeakSelf.menuClickBlock(i,title,titles.count);
+            };
+
+        
+    }
+}
 
 - (void)trigger {
     

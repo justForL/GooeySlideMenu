@@ -22,7 +22,7 @@
     //当navigationController 遇到 tableView 会自动偏移一段距离  需要手动关闭
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    _menu = [[GooeySlideMenu alloc]initWithTitle:@[@"首页",@"消息",@"发布",@"发现",@"个人",@"设置"]];
+    _menu = [[GooeySlideMenu alloc]initWithTitle:@[@"消息",@"发布",@"发现",@"个人",@"设置"]];
 }
 
 - (IBAction)triggerClick:(id)sender {
