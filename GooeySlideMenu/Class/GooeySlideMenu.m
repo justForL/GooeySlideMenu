@@ -192,10 +192,33 @@
         [UIView animateWithDuration:0.25 animations:^{
             _blurView.alpha = 1;
         }];
+        
+        [self animateButtons];
+        
         _triggered = YES;
     }else {
         
         [self tapToUnTrigger];
+    }
+}
+
+
+/**
+ *  给按钮添加动画
+ */
+- (void)animateButtons {
+    
+    for (int i = 0; i < self.subviews.count; ++i) {
+        
+        UIView *menuButton = self.subviews[i];
+        //给按钮先平移
+        menuButton.transform = CGAffineTransformMakeTranslation(-90, 0);
+        
+        //添加动画
+        [UIView animateWithDuration:0.7 delay:i * (0.3 / self.subviews.count) usingSpringWithDamping:0.6f initialSpringVelocity:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction animations:^{
+            
+            menuButton.transform = CGAffineTransformIdentity;//是讲位移置为上一次修改前的状态
+        } completion:NULL];
     }
 }
 
