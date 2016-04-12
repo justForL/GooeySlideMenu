@@ -45,9 +45,17 @@
     
     
     CGFloat               _menuButtonHeight;
+    /**
+     *  两个辅助视图的x值得差
+     */
+    CGFloat               _diff;
     
     
     CADisplayLink        *_displayLink;
+    /**
+     *  动画数量
+     */
+    NSInteger             _animationCount;
 }
 
 
@@ -88,7 +96,7 @@
         
         
         self.frame = CGRectMake(- _keyWindow.frame.size.width / 2 - menuBlankWidth, 0, _keyWindow.frame.size.width / 2 + menuBlankWidth, _keyWindow.frame.size.height);
-        self.backgroundColor = menuColor;
+        self.backgroundColor = [UIColor clearColor];
 //        [_keyWindow insertSubview:self belowSubview:_helperCenterView];
         [_keyWindow addSubview:self];
         _menuColor = menuColor;
@@ -125,7 +133,7 @@
         
         [self beforAnimation];
         
-        [UIView animateWithDuration:0.75 delay:0 options:    UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
+        [UIView animateWithDuration:0.75 delay:0 usingSpringWithDamping:0.5f initialSpringVelocity:0.9f options:UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
             
             _helperSideView.center = CGPointMake(_keyWindow.center.x, _helperSideView.frame.size.height / 2);
             
@@ -136,8 +144,8 @@
         
         [self beforAnimation];
         
-        [UIView animateWithDuration:0.75 delay:0 options:UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
-            _helperSideView.center = _keyWindow.center;
+        [UIView animateWithDuration:0.75 delay:0 usingSpringWithDamping:0.8f initialSpringVelocity:2.0f options:UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
+            _helperCenterView.center = _keyWindow.center;
             
         } completion:^(BOOL finished) {
             if (finished) {
@@ -167,11 +175,32 @@
     [UIView animateWithDuration:0.25 animations:^{
         self.frame = CGRectMake(- _keyWindow.frame.size.width /2 - menuBlankWidth, 0, _keyWindow.frame.size.width / 2 + menuBlankWidth, _keyWindow.frame.size.height);
     }];
+
+    //移动边界辅助view
+    [self beforAnimation];
+    [UIView animateWithDuration:0.75 delay:0 usingSpringWithDamping:0.6f initialSpringVelocity:0.9f options:UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
+        
+        _helperSideView.center = CGPointMake(- _helperSideView.frame.size.height/2, _helperSideView.frame.size.height/2);
+    } completion:^(BOOL finished) {
+        [self finishedAnimation];
+    }];
+    
     
     //关闭blur
     [UIView animateWithDuration:0.25 animations:^{
         _blurView.alpha = 0;
     }];
+    
+    //移动中心辅助view
+    [self beforAnimation];
+    
+    [UIView animateWithDuration:0.75 delay:0 usingSpringWithDamping:0.6f initialSpringVelocity:2.0f options:UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
+        
+        _helperCenterView.center = CGPointMake(- _helperCenterView.frame.size.height/2, _helperCenterView.frame.size.height/2);
+    } completion:^(BOOL finished) {
+        [self finishedAnimation];
+    }];
+    
     _triggered = NO;
 }
 
@@ -185,6 +214,7 @@
         [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         
     }
+    _animationCount++;
 }
 
 
@@ -192,15 +222,30 @@
  *  动画结束
  */
 - (void)finishedAnimation {
+    _animationCount--;
+    if (_animationCount == 0) {
+        [_displayLink invalidate];
+        _displayLink = nil;
+    }
     
-    [_displayLink invalidate];
-    _displayLink = nil;
 }
 
 
 
 - (void)drawRect:(CGRect)rect {
     
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    
+    [path moveToPoint:CGPointZero];
+    [path addLineToPoint:CGPointMake(self.frame.size.width - menuBlankWidth, 0)];
+    [path addQuadCurveToPoint:CGPointMake(self.frame.size.width - menuBlankWidth, self.frame.size.height) controlPoint:CGPointMake(_keyWindow.frame.size.width / 2 + _diff, _keyWindow.frame.size.height / 2)];
+    [path addLineToPoint:CGPointMake(0, self.frame.size.height)];
+    [path closePath];
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextAddPath(context, path.CGPath);
+    [_menuColor set];
+    CGContextFillPath(context);
+    NSLog(@"diff------%f",_diff);
 }
 /**
  *  用于重绘的方法
@@ -209,5 +254,14 @@
  */
 - (void)displayLinkAction:(CADisplayLink *)displayLink {
     
+    CALayer *sideHelperPresentationLayer = [_helperSideView.layer presentationLayer];
+    CALayer *centerHelperPresentationLayer = [_helperCenterView.layer presentationLayer];
+    
+    CGRect sideRect = [[sideHelperPresentationLayer valueForKey:@"frame"]CGRectValue];
+    CGRect centerRect = [[centerHelperPresentationLayer valueForKey:@"frame"]CGRectValue];
+    
+    _diff = sideRect.origin.x - centerRect.origin.x;
+    
+    [self setNeedsDisplay];
 }
 @end
