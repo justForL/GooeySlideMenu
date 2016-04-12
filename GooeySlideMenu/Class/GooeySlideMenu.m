@@ -25,11 +25,13 @@
      */
     UIVisualEffectView   *_blurView;
     /**
-     *
+     * 边界辅助view
      */
     UIView               *_helperSideView;
     
-    
+    /**
+     *  中心辅助view
+     */
     
     UIView               *_helperCenterView;
     
@@ -43,6 +45,9 @@
     
     
     CGFloat               _menuButtonHeight;
+    
+    
+    CADisplayLink        *_displayLink;
 }
 
 
@@ -79,7 +84,7 @@
         _helperCenterView = [[UIView alloc]initWithFrame:CGRectMake(-40, CGRectGetHeight(_keyWindow.frame), 40, 40)];
         _helperCenterView.backgroundColor = [UIColor yellowColor];
         _helperCenterView.hidden = YES;
-//        [_keyWindow addSubview:_helperCenterView];
+        [_keyWindow addSubview:_helperCenterView];
         
         
         self.frame = CGRectMake(- _keyWindow.frame.size.width / 2 - menuBlankWidth, 0, _keyWindow.frame.size.width / 2 + menuBlankWidth, _keyWindow.frame.size.height);
@@ -102,7 +107,6 @@
         /**
          *  insertSubview与addSubview的区别:
          
-         
          A addSubview B  是将B直接覆盖在A的最上层
          
          A insertSubView B AtIndex:2 是将B插入到A的子视图index为2的位置（最底下是0）
@@ -119,20 +123,91 @@
             self.frame = self.bounds;
         }];
         
+        [self beforAnimation];
+        
+        [UIView animateWithDuration:0.75 delay:0 options:    UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
+            
+            _helperSideView.center = CGPointMake(_keyWindow.center.x, _helperSideView.frame.size.height / 2);
+            
+        } completion:^(BOOL finished) {
+            
+            [self finishedAnimation];
+        }];
+        
+        [self beforAnimation];
+        
+        [UIView animateWithDuration:0.75 delay:0 options:UIViewAnimationOptionAllowUserInteraction |          UIViewAnimationOptionBeginFromCurrentState animations:^{
+            _helperSideView.center = _keyWindow.center;
+            
+        } completion:^(BOOL finished) {
+            if (finished) {
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapToUnTrigger)];
+                [_blurView addGestureRecognizer:tap];
+                
+                [self finishedAnimation];
+            }
+        }];
         
         //当点击Trigger按钮的时候,将毛玻璃的透明度显示成1,在界面上显示出来,加上动画效果,不会显得生硬,突兀
         [UIView animateWithDuration:0.25 animations:^{
             _blurView.alpha = 1;
         }];
+        _triggered = YES;
+    }else {
+        
+        [self tapToUnTrigger];
     }
 }
 
+/**
+ *  关闭slideMenu
+ */
+- (void)tapToUnTrigger {
+    //关闭蓝色view
+    [UIView animateWithDuration:0.25 animations:^{
+        self.frame = CGRectMake(- _keyWindow.frame.size.width /2 - menuBlankWidth, 0, _keyWindow.frame.size.width / 2 + menuBlankWidth, _keyWindow.frame.size.height);
+    }];
+    
+    //关闭blur
+    [UIView animateWithDuration:0.25 animations:^{
+        _blurView.alpha = 0;
+    }];
+    _triggered = NO;
+}
+
+/**
+ *  开始动画前
+ */
+- (void)beforAnimation {
+    if (_displayLink == nil) {
+        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkAction:)];
+        //加入Runloop循环
+        [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        
+    }
+}
+
+
+/**
+ *  动画结束
+ */
+- (void)finishedAnimation {
+    
+    [_displayLink invalidate];
+    _displayLink = nil;
+}
 
 
 
 - (void)drawRect:(CGRect)rect {
     
 }
-
-
+/**
+ *  用于重绘的方法
+ *
+ *  @param displayLink 定时器
+ */
+- (void)displayLinkAction:(CADisplayLink *)displayLink {
+    
+}
 @end
